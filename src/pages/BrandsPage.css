@@ -1,0 +1,12 @@
+/* src/pages/BrandsPage.css */
+.list-group-item {
+  background-color: #FFFFFF;
+  border-color: #E0E0E0;
+  padding: 10px;
+  font-size: 14px;
+  color: #000000;
+}
+
+.list-group-item:hover {
+  background-color: #F5F5F5;
+}
