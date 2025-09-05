@@ -1,21 +1,24 @@
 import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import { useParams } from 'react-router-dom';
-import { Tabs, Tab, Table, Button, Spinner, Alert } from 'react-bootstrap';
-import { useLanguage } from '../contexts/LanguageContext';
+import { Tabs, Tab, Table, Spinner, Alert, Card } from 'react-bootstrap';
 import './DetailsPage.css';
 
-const GET_GUITAR = gql`
-  query GetGuitar($brandId: ID!, $modelId: ID!) {
+const GET_MODEL_DETAILS = gql`
+  query GetModel($brandId: ID!, $modelId: ID!) {
     findUniqueModel(brandId: $brandId, modelId: $modelId) {
       id
       name
-      type
+      description
+      image
       specs {
         bodyWood
         neckWood
         fingerboardWood
         pickups
+        tuners
+        scaleLength
+        bridge
       }
       musicians {
         name
@@ -27,71 +30,90 @@ const GET_GUITAR = gql`
 const DetailsPage = () => {
   const { brandId, modelId } = useParams();
   const [visibleMusicians, setVisibleMusicians] = useState(2);
-  const { loading, error, data } = useQuery(GET_GUITAR, {
+
+  const { loading, error, data } = useQuery(GET_MODEL_DETAILS, {
     variables: { brandId, modelId },
   });
-  const { t } = useLanguage();
 
   if (loading) return <Spinner animation="border" className="text-primary" />;
-  if (error) return <Alert variant="danger">{t('error')}</Alert>;
+  if (error) return <Alert variant="danger">Error fetching data: {error.message}</Alert>;
 
-  const guitar = data?.findUniqueModel || {};
-  const specs = guitar.specs || {};
-  const musicians = guitar.musicians || [];
-
-  const showMore = () => setVisibleMusicians((prev) => prev + 2);
+  const guitar = data?.findUniqueModel;
+  const specs = guitar?.specs || [];
+  const musicians = guitar?.musicians || [];
 
   return (
-    <div className="container-fluid bg-light min-vh-100 py-4">
-      <div className="card mx-auto" style={{ maxWidth: '600px', padding: '20px', backgroundColor: '#FFFFFF' }}>
-        <Tabs defaultActiveKey="specs" id="guitar-tabs" className="mb-3">
-          <Tab eventKey="specs" title={t('specs')} tabClassName="fw-bold fs-5 text-dark">
-            <Table striped bordered hover className="custom-table">
-              <tbody>
-                <tr>
-                  <td className="fw-bold text-dark">Body Wood</td>
-                  <td>{specs.bodyWood || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="fw-bold text-dark">Neck Wood</td>
-                  <td>{specs.neckWood || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="fw-bold text-dark">Fingerboard</td>
-                  <td>{specs.fingerboardWood || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="fw-bold text-dark">Pickups</td>
-                  <td>{specs.pickups || 'N/A'}</td>
-                </tr>
-                <tr>
-                  <td className="fw-bold text-dark">Number of Frets</td>
-                  <td>Unavailable (pending schema update)</td>
-                </tr>
-              </tbody>
-            </Table>
-          </Tab>
-          <Tab eventKey="musicians" title={t('musicians')} tabClassName="fw-bold fs-5 text-dark">
-            <ul className="list-unstyled mb-3" style={{ paddingLeft: '0' }}>
-              {musicians.slice(0, visibleMusicians).map((musician, index) => (
-                <li key={index} className="mb-2" style={{ fontSize: '14px' }}>
-                  {musician.name}
-                </li>
-              ))}
-            </ul>
-            {visibleMusicians < musicians.length && (
-              <Button
-                variant="primary"
-                onClick={showMore}
-                className="mt-2"
-                style={{ padding: '8px 16px', backgroundColor: '#007BFF', borderColor: '#007BFF' }}
-              >
-                {t('showMore')}
-              </Button>
-            )}
-          </Tab>
-        </Tabs>
-      </div>
+    <div className="details-page">
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-text">
+          <h1>{guitar.name}</h1>
+          <p>{guitar.description}</p>
+        </div>
+        <div className="hero-image">
+          <img src={guitar.image || '/assets/placeholder.png'} alt={guitar.name} />
+        </div>
+      </section>
+
+      {/* Tabs */}
+      <Tabs defaultActiveKey="specs" id="guitar-tabs" className="mb-3">
+        {/* Specs */}
+        <Tab eventKey="specs" title="Specifications">
+          <Table striped bordered hover className="custom-table">
+            <tbody>
+              <tr>
+                <td>Body Wood</td>
+                <td>{specs.bodyWood || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td>Neck Wood</td>
+                <td>{specs.neckWood || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td>Fingerboard</td>
+                <td>{specs.fingerboardWood || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td>Pickups</td>
+                <td>{specs.pickups || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td>Tuners</td>
+                <td>{specs.tuners || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td>Scale Length</td>
+                <td>{specs.scaleLength || 'N/A'}</td>
+              </tr>
+              <tr>
+                <td>Bridge</td>
+                <td>{specs.bridge || 'N/A'}</td>
+              </tr>
+            </tbody>
+          </Table>
+        </Tab>
+
+        {/* Musicians */}
+        <Tab eventKey="musicians" title="Who Plays It?">
+          <div className="musicians-list">
+            {musicians.slice(0, visibleMusicians).map((musician, index) => (
+              <Card key={index} className="musician-card mb-2">
+                <Card.Body>
+                  <Card.Title>{musician.name}</Card.Title>
+                </Card.Body>
+              </Card>
+            ))}
+          </div>
+          {visibleMusicians < musicians.length && (
+            <button
+              className="show-more-btn"
+              onClick={() => setVisibleMusicians(prev => prev + 2)}
+            >
+              Show More
+            </button>
+          )}
+        </Tab>
+      </Tabs>
     </div>
   );
 };

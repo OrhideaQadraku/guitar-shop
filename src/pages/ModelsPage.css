@@ -1,17 +1,102 @@
-/* src/pages/ModelsPage.css */
-.list-group-item {
-  background-color: #FFFFFF;
-  border-color: #E0E0E0;
-  padding: 10px;
-  font-size: 14px;
-  color: #000000;
+.models-page {
+  background: #fff;
+  font-family: 'Inter', sans-serif;
+  padding: 20px;
 }
 
-.list-group-item:hover {
-  background-color: #F5F5F5;
+
+.models-header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 16px;
 }
 
-.form-control, .form-select {
-  border-color: #E0E0E0;
+.models-header .highlight {
+  color: #ff5a1f;
+}
+
+
+.filter-bar {
+  margin-bottom: 18px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.models-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  padding: 20px 0;
+}
+
+.model-card {
+  border: 1px solid #e0e0e0;
+  padding: 16px;
+  text-align: center;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+  background: #fff;
+}
+
+.model-card:hover {
+  transform: translateY(-4px);
+  background: #fafafa;
+}
+
+.model-image-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 160px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.model-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.model-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+
+.model-type {
+  font-size: 13px;
+  color: #666;
+}
+
+.model-price {
   font-size: 14px;
+  font-weight: 500;
+  margin-top: 6px;
+  color: #ff5a1f;
+}
+
+@media (max-width: 1100px) {
+  .models-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .models-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pagination-wrap {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: #ff5a1f;
+  border-color: #ff5a1f;
+  color: #fff;
 }

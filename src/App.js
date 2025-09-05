@@ -11,12 +11,11 @@ import { LanguageProvider } from './contexts/LanguageContext';
 const httpLink = createHttpLink({
   uri: 'https://graphql-api-brown.vercel.app/api/graphql',
   fetchOptions: {
-    method: 'GET', // Force GET requests
+    method: 'GET',
   },
 });
 
 const authLink = setContext((_, { headers }) => {
-  // Add headers if required (none needed for now)
   return {
     headers: {
       ...headers,
